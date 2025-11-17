@@ -7,11 +7,9 @@ dotenv.config();
 const app: Express = express();
 const PORT = process.env.PORT || 3000;
 
-// Middlewares
 app.use(cors());
 app.use(express.json());
 
-// Rota de teste
 app.get("/api/health", (req: Request, res: Response) => {
   res.json({
     status: "ok",
