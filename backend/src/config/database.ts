@@ -1,16 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-
-/**
- * Singleton do Prisma Client
- * 
- * Por que singleton?
- * - Evita múltiplas conexões ao banco
- * - Reutiliza a mesma instância em todo o app
- * - Previne memory leaks
- * 
- * Em produção, o Prisma gerencia um pool de conexões
- * automaticamente (padrão: 10 conexões)
- */
+import { PrismaClient } from '../../generated/prisma/index.js';
 
 declare global {
   var prisma: PrismaClient | undefined;
@@ -23,7 +11,6 @@ const prisma = global.prisma || new PrismaClient({
 if (process.env.NODE_ENV !== 'production') {
   global.prisma = prisma;
 }
-
 
 export async function testConnection(): Promise<boolean> {
   try {
@@ -40,5 +27,4 @@ export async function disconnectDatabase(): Promise<void> {
   await prisma.$disconnect();
   console.log(' Database disconnected');
 }
-
 export default prisma;

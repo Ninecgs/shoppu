@@ -1,8 +1,10 @@
 // to run = npx ts-node src/server.ts
+//import * as z from "zod"; to-do later for validations
 import express, { Express, Request, Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import prisma, { testConnection, disconnectDatabase } from "./config/database";
+import { stat } from "fs";
 
 dotenv.config();
 
@@ -12,11 +14,11 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-app.get("/api/health", (req: Request, res: Response) => {
+app.get("/", (req: Request, res: Response) => {
   res.json({
     status: "ok",
-    message: "Shoppu API is running",
-    timestamp: new Date().toISOString(),
+    message: "This is Shoppu Backend API running!",
+    note: "There's nothing to see here yet!",
   });
 });
 
@@ -27,7 +29,6 @@ app.get("/api/health/db", async (req: Request, res: Response) => {
       prisma.category.count(),
       prisma.product.count(),
     ]);
-
     res.json({
       status: "healthy",
       message: "Database connected",
@@ -59,11 +60,8 @@ async function startServer() {
     }
     app.listen(PORT, () => {
       console.log("\n Server started successfully!");
-      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
       console.log(` Server:     http://localhost:${PORT}`);
-      console.log(` Health:     http://localhost:${PORT}/api/health`);
-      console.log(` DB Health:  http://localhost:${PORT}/api/health/db`);
-      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+      console.log(` Health:     http://localhost:${PORT}/api/health/db`);
     });
   } catch (error) {
     console.error("Failed to start server:", error);
@@ -71,15 +69,8 @@ async function startServer() {
   }
 }
 
-process.on("SIGINT", async () => {
-  console.log("\n Shutting down gracefully...");
-  await disconnectDatabase();
-  console.log("Server stopped. Goodbye!");
-  process.exit(0);
-});
-
 process.on("SIGTERM", async () => {
-  console.log("\n Shutting down gracefully...");
+  console.log("\n Shutting down");
   await disconnectDatabase();
   process.exit(0);
 });
